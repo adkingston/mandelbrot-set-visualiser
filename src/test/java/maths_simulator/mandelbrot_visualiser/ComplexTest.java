@@ -70,7 +70,7 @@ public class ComplexTest {
 	public void mandelbrotConvergenceTest() {
 //		_z = new Complex(-1, 0);
 //		assertTrue(_z.mandelbrotSimpleConvergence() == 0);
-		_z = new Complex(-0.25, 0.2);
+		_z = new Complex(0.26, 0);
 		System.out.println(_z.mandelbrotSimpleConvergence());
 	}
 	

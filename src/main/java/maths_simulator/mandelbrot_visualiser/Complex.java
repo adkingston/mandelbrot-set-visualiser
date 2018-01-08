@@ -26,8 +26,10 @@ class Complex implements Comparable<Complex>{
 	}
 	
 	public String toString() {
-		if (_imaginary != 0) {
+		if (_imaginary > 0) {
 			return _real + " + "  + _imaginary + "i";
+		} else if (_imaginary < 0) {
+			return _real + _imaginary + "i";
 		} else {
 			return Double.toString(_real);
 		}	
@@ -51,6 +53,14 @@ class Complex implements Comparable<Complex>{
 	 */
 	public double modulus(Complex c) {
 		return Math.sqrt(c.getReal()*c.getReal() + c.getImaginary()*c.getImaginary());
+	}
+	
+	public double modulus() {
+		return Math.sqrt(this.getReal()*this.getReal() + this.getImaginary()*this.getImaginary());
+	}
+	
+	public Complex conjugate() {
+		return new Complex(this._real, -this._imaginary);
 	}
 
 	/**
@@ -104,10 +114,11 @@ class Complex implements Comparable<Complex>{
 	public double mandelbrotSimpleConvergence() {
 		// will check up to n=100. 
 		Complex c = this.P(this);
+		Complex c1 = c.P(this);
 		int n = 0;
-		while (c.isFinite() && n < 1000) {
-			c = c.P(this);
-			System.out.println(c);
+		while (c1.isFinite() && n < 1000 && Math.abs(c.modulus() - c1.modulus()) > 1e-4 ){
+			c = c1.P(this);
+			c1 = c.P(this);
 			n++;
 		}
 		return c.getModulus();
