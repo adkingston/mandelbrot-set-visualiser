@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.lang.Math;
 
 import javax.swing.JPanel;
 
@@ -24,14 +25,22 @@ public class MandelbrotSet extends JPanel {
     	HEIGHT = height;
     	
         canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-   
         for (int x=0; x<width; x++) {
         	for (int y=0; y<height; y++) {
         		double[] P = pixelToPoint(x, y);
         		Complex c = new Complex(P[0], P[1]);
-        		double mod = c.mandelbrotSimpleConvergence();
-        		if (mod <= 2) {
+        		float mod = (float) c.mandelbrotSimpleConvergence();
+        		if (mod == 2) {
         			paintPixel(Color.BLACK, x, y);
+        		} else {
+        			canvas.setRGB(x, y, Color.HSBtoRGB(2*mod ,0.6f,1.0f));
+//        			paintPixel(
+//        					new Color(mod, mod, mod
+////        							  (float) Math.abs(Math.sin(mod)), 
+////        							  (float) Math.abs(Math.sin(mod)), 
+////        							  (float) Math.abs(Math.sin(mod))
+//        							  ), 
+//        					x, y);
         		}
         	}
         }
@@ -57,7 +66,7 @@ public class MandelbrotSet extends JPanel {
     public double[] pixelToPoint(int x, int y) {
     	double[] point = new double[2];
     	double a = (x - ((WIDTH-(WIDTH/2.0)/2.0)))/(WIDTH-(WIDTH/2.0)/2.0)*2;
-    	double b = ((HEIGHT/2.0) - y)/(HEIGHT/2.0);
+    	double b = ((HEIGHT/2.0) - y)/(HEIGHT/2.0)*1.2;
     	point[0] = a;
     	point[1] = b;
     	return point;

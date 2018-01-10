@@ -1,6 +1,7 @@
 package maths_simulator.mandelbrot_visualiser; 
 
 import java.lang.Math;
+import java.util.ArrayList;
 
 class Complex implements Comparable<Complex>{
 	
@@ -15,6 +16,14 @@ class Complex implements Comparable<Complex>{
 		_real = r;
 		_imaginary = j;
 		_mod = modulus(this);
+	}
+	
+	public double log(double a) {
+		return Math.log(a);
+	}
+	
+	public double log2(double a) {
+		return Math.log(a)/Math.log(2.0);
 	}
 	
 	public double getReal() {
@@ -96,15 +105,13 @@ class Complex implements Comparable<Complex>{
 		double y = (this._real*c.getImaginary() + this._imaginary*c.getReal());
 		return new Complex(x, y);
 	}
+
 	
-	public Complex P(Complex c0) {
-		Complex c = this.multiply(this);
-		return c.add(c0);
+	public double dot(Complex a, Complex b) {
+		return a.getReal()*b.getReal() + a.getImaginary()*b.getImaginary();
 	}
+
 	
-	public boolean isFinite() {
-		return (Double.isFinite(this.getReal()) || Double.isFinite(this.getImaginary()));
-	}
 	
 	/**
 	 * P_c: C -> C given by P_c(z) = z^2 + c. If lim n-> infinity {modulus(P_c^n(0))} <= 2,
@@ -112,16 +119,36 @@ class Complex implements Comparable<Complex>{
 	 * @return boolean
 	 */
 	public double mandelbrotSimpleConvergence() {
-		// will check up to n=100. 
-		Complex c = this.P(this);
-		Complex c1 = c.P(this);
-		int n = 0;
-		while (c1.isFinite() && n < 1000 && Math.abs(c.modulus() - c1.modulus()) > 1e-4 ){
-			c = c1.P(this);
-			c1 = c.P(this);
+		// will check up to n=200. 
+		
+		Complex c = this.multiply(this).add(this);
+		double sn = 0;
+		int n = 1;
+		while (c.modulus() <= 2.0 && n < 100 ){
+			c = c.multiply(c).add(this);
 			n++;
 		}
-		return c.getModulus();
+		if (c.modulus() > 2) {
+			sn = (n - Math.log(Math.log(c.modulus())/Math.log(2)))/((float) 100);
+		} else {
+			sn = 2;
+		}
+		return sn;
+		
 	}
+	
+//	public int escapeAlgorithm() {
+//		Complex c = this.P(this);
+//		Complex c1 = this.P(this);
+//		double mod = c1.modulus();
+//		int n = 0;
+//		while (mod <= 2 && n < 255) {
+//			c = c1.P(this);
+//			c1 = c;
+//			mod = c1.modulus();
+//			n++;
+//		}
+//		return n;
+//	}
 	
 }

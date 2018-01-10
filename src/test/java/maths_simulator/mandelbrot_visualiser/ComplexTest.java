@@ -41,9 +41,6 @@ public class ComplexTest {
 		
 		Complex d = _z.multiply(_z);
 		assertTrue(d.equals(new Complex(1, 0)));
-		
-		Complex e = _z.P(_z);
-		assertTrue(e.equals(new Complex(0, 0)));
 	}
 	
 	@Test
@@ -61,17 +58,13 @@ public class ComplexTest {
 		
 		Complex d = _z.multiply(_z);
 		assertTrue(d.equals(new Complex(-3, -4)));
-		
-		Complex e = _z.P(_z);
-		assertTrue(e.equals(new Complex(-4, -2)));
 	}
 	
 	@Test
 	public void mandelbrotConvergenceTest() {
-//		_z = new Complex(-1, 0);
-//		assertTrue(_z.mandelbrotSimpleConvergence() == 0);
-		_z = new Complex(0.26, 0);
-		System.out.println(_z.mandelbrotSimpleConvergence());
+		_z = new Complex(-1, 0);
+		// a value of 2 signifies _z is in the Mandelbrot set
+		assertTrue(_z.mandelbrotSimpleConvergence() == 2);
 	}
 	
 }
