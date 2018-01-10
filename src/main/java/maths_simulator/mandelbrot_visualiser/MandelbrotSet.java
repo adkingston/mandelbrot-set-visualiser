@@ -34,13 +34,6 @@ public class MandelbrotSet extends JPanel {
         			paintPixel(Color.BLACK, x, y);
         		} else {
         			canvas.setRGB(x, y, Color.HSBtoRGB(2*mod ,0.6f,1.0f));
-//        			paintPixel(
-//        					new Color(mod, mod, mod
-////        							  (float) Math.abs(Math.sin(mod)), 
-////        							  (float) Math.abs(Math.sin(mod)), 
-////        							  (float) Math.abs(Math.sin(mod))
-//        							  ), 
-//        					x, y);
         		}
         	}
         }
