@@ -1,9 +1,14 @@
 package maths_simulator.mandelbrot_visualiser; 
 
 import java.lang.Math;
-import java.util.ArrayList;
 
-class Complex implements Comparable<Complex>{
+interface ComplexNums<TA, TM> {
+	TA add(TA c); 
+	TA negate();
+	TA multiply(TM c);
+}
+
+class Complex implements Comparable<Complex>, ComplexNums<Complex, Complex>{
 	
 	private double _real;
 	private double _imaginary;
@@ -18,13 +23,6 @@ class Complex implements Comparable<Complex>{
 		_mod = modulus(this);
 	}
 	
-	public double log(double a) {
-		return Math.log(a);
-	}
-	
-	public double log2(double a) {
-		return Math.log(a)/Math.log(2.0);
-	}
 	
 	public double getReal() {
 		return _real;
@@ -92,9 +90,11 @@ class Complex implements Comparable<Complex>{
 	}
 	
 	public Complex add(Complex c) {
-		double x = this._real + c.getReal();
-		double y = this._imaginary + c.getImaginary();
-		return new Complex(x, y);
+		return new Complex(this._real + c.getReal(), this._imaginary + c.getImaginary());
+	}
+	
+	public Complex negate() {
+		return new Complex(-this._real, -this._imaginary);
 	}
 	
 	/**
@@ -110,33 +110,58 @@ class Complex implements Comparable<Complex>{
 	public double dot(Complex a, Complex b) {
 		return a.getReal()*b.getReal() + a.getImaginary()*b.getImaginary();
 	}
-
 	
+	public Complex pow(int n) {
+		Complex c = this;
+		for (int i=1; i<n; i++) {
+			c = c.multiply(this);
+		}
+		return c;
+	}
 	
 	/**
 	 * P_c: C -> C given by P_c(z) = z^2 + c. If lim n-> infinity {modulus(P_c^n(0))} <= 2,
 	 * then c is in the Mandelbrot set
-	 * @return boolean
+	 * @return 2 if z is in the Mandelbrot set a double between 0 and 1 otherwise to determine colouring
 	 */
-	public double mandelbrotSimpleConvergence() {
+	public double mandelbrotSimpleConvergence(int k) {
 		// will check up to n=200. 
 		
-		Complex c = this.multiply(this).add(this);
+		Complex c = this.pow(2).add(this);
 		double sn = 0;
 		int n = 1;
-		while (c.modulus() <= 2.0 && n < 100 ){
-			c = c.multiply(c).add(this);
+		while (c.modulus() <= 2.0 && n < k ){
+			c = c.pow(2).add(this);
 			n++;
 		}
 		if (c.modulus() > 2) {
-			sn = (n - Math.log(Math.log(c.modulus())/Math.log(2)))/((float) 100);
+			sn = (n - Math.log(Math.log(c.modulus())/Math.log(2)))/((float) k);
 		} else {
 			sn = 2;
 		}
 		return sn;
 		
 	}
-	
+	/**
+	 * 
+	 * @param f String of form (a_d*z^d + b_d*c^k_d + l_d) + (a_(d-1)*z^(d-1) + b_(d-1)*c^k_(d-1) + l_(d-1) + ... + (a_0 + b_0*c^k_0 + l_0)
+	 * @param z Complex number z to input
+	 * @param c Complex number c to input
+	 * @return value of f(z,c) 
+	 */
+//	
+//	public Complex stringToFunc(String f, Complex z, Complex c) {
+//		Complex j = new Complex(0,0);
+//		Expression e = new ExpressionBuilder(f)
+//							.variables("z", "c")
+//							.build()
+//							.setVariable("z", z)
+//							.setVariable("c", c);;
+//		return j;
+//	}
+//	
+
+
 //	public int escapeAlgorithm() {
 //		Complex c = this.P(this);
 //		Complex c1 = this.P(this);

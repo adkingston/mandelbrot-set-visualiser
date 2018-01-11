@@ -4,8 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.lang.Math;
 
 import javax.swing.JPanel;
 
@@ -20,20 +21,20 @@ public class MandelbrotSet extends JPanel {
     private int WIDTH;
     private int HEIGHT;
 
-    public MandelbrotSet(int width, int height) {
+    public MandelbrotSet(int width, int height, double dm, int k, Point p) {
     	WIDTH = width;
     	HEIGHT = height;
     	
         canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         for (int x=0; x<width; x++) {
         	for (int y=0; y<height; y++) {
-        		double[] P = pixelToPoint(x, y);
+        		double[] P = pixelToPoint(x, y, dm, p);
         		Complex c = new Complex(P[0], P[1]);
-        		float mod = (float) c.mandelbrotSimpleConvergence();
+        		float mod = (float) c.mandelbrotSimpleConvergence(k);
         		if (mod == 2) {
-        			paintPixel(Color.BLACK, x, y);
+        			canvas.setRGB(x,  y,  Color.BLACK.getRGB());
         		} else {
-        			canvas.setRGB(x, y, Color.HSBtoRGB(2*mod ,0.6f,1.0f));
+        			canvas.setRGB(x, y, Color.HSBtoRGB(0.7f + mod*0.3f ,0.95f, 1.0f));
         		}
         	}
         }
@@ -49,17 +50,17 @@ public class MandelbrotSet extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.drawImage(canvas, null, null);
     }
-
-    public void paintPixel(Color c, int x, int y) {
-        int color = c.getRGB();
-        canvas.setRGB(x, y, color);
-        repaint();
+    
+    public double map(double z, double n, double m, double x, double y) {
+    	return ((y - x)/(m - n))*z + ((x*m + y*n)/(m+n)); 
     }
-
-    public double[] pixelToPoint(int x, int y) {
+    
+    public double[] pixelToPoint(int x, int y, double dm, Point pos) {
     	double[] point = new double[2];
-    	double a = (x - ((WIDTH-(WIDTH/2.0)/2.0)))/(WIDTH-(WIDTH/2.0)/2.0)*2;
-    	double b = ((HEIGHT/2.0) - y)/(HEIGHT/2.0)*1.2;
+    	double posX = map(pos.getX(), 0, WIDTH, -2.2 + dm, 1.2 - dm);
+    	double posY = map(pos.getY(), 0, HEIGHT, -1.2 + dm, 1.2 - dm);
+    	double a = map(x, 0, WIDTH, -2.2 + dm + posX, 1.2 - dm + posX);
+    	double b = map(y, 0, HEIGHT, -1.12 + dm + posY, 1.12 - dm + posY);
     	point[0] = a;
     	point[1] = b;
     	return point;
