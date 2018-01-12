@@ -10,26 +10,19 @@ import java.awt.event.MouseWheelListener;
 
 public class MouseTracker extends Main implements MouseWheelListener, MouseMotionListener {
 
-	double _scalingFactor = 0.1;
+	double _scalingFactor = 0.01;
 	public double newScaling = 0;
-	public Point pos;
-	
+	public Point pos = new Point(0,0);
+	public PointerInfo a;
 	
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		newScaling += event.getWheelRotation()*_scalingFactor;
-		PointerInfo a = MouseInfo.getPointerInfo();
+		newScaling += -event.getWheelRotation()*_scalingFactor;
+		a = MouseInfo.getPointerInfo();
 		pos  = a.getLocation();
-		int x = (int) pos.getX();
-		int y = (int) pos.getY();
-		System.out.println(x + " " + y);
-		
+	
 		frame.remove(panel);
 		frame.add(new MandelbrotSet(width, height, newScaling, 50, pos));
 		frame.pack();
-		
-
-//		System.out.println(newScaling*_scalingFactor);
-		
 		
 	}
 	
@@ -52,5 +45,5 @@ public class MouseTracker extends Main implements MouseWheelListener, MouseMotio
 		System.out.println("X : " + e.getX());
 		System.out.println("Y : " + e.getY());
 	}
-	
+
 }
