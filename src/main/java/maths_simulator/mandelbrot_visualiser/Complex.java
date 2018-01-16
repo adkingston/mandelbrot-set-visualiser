@@ -127,13 +127,14 @@ class Complex implements Comparable<Complex>, ComplexNums<Complex, Complex>{
 	public double mandelbrotSimpleConvergence(int k) {
 		// will check up to n=200. 
 		
-		Complex c = this.pow(2).add(this);
+		Complex c = this.pow(23).add(this);
 		double sn = 0;
 		int n = 1;
 		while (c.modulus() <= 2.0 && n < k ){
-			c = c.pow(2).add(this);
+			c = c.pow(23).add(this);
 			n++;
 		}
+		
 		if (c.modulus() > 2) {
 			sn = (n - Math.log(Math.log(c.modulus())/Math.log(2)))/((float) k);
 		} else {
