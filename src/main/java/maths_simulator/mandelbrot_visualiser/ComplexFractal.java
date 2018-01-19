@@ -2,6 +2,8 @@ package maths_simulator.mandelbrot_visualiser;
 
 import processing.core.PApplet;
 import processing.event.MouseEvent;
+
+import java.awt.Color;
 import java.lang.Math;
 
 public class ComplexFractal extends PApplet{
@@ -16,6 +18,9 @@ public class ComplexFractal extends PApplet{
 	double mX, mY, pmX, pmY; 
 	
 	int posX, posY;
+	
+	int c1 = color(204, 102, 0);
+	int c2 = color(0, 102, 153);
 	
     public static void main(String[] args) {
         PApplet.main(ComplexFractal.class.getName());
@@ -36,34 +41,12 @@ public class ComplexFractal extends PApplet{
     	xmax = 1.2f;
     	ymin = -1.2f;
     	ymax = 1.2f;
+    	
+    	makeFractal();
     }
     
     public void draw() {
-    	
-
-	   	for (int x = 0; x < width; x++) {
-    		
-    		double zX = map(x, 0, width, xmin, xmax);
-    		
-    		for (int y = 0; y < height; y++) {
-    			
-    			double zY = map(y, 0, height, ymin, ymax);
-    			
-    			Complex c = new Complex(zX, zY);
-    			
-    			double colour = c.mandelbrotSimpleConvergence(50);
-    			
-    			
-    			if (colour == 2) {
-    				pixels[x+y*width] = color(0);
-    			} else { 
-    				pixels[x+y*width] = color((float) colour*255, 0, (float) colour*255);
-    			}
-    			
-    		}
-    	}	
-	   	
-	   	updatePixels();
+    	makeFractal();
     }
 
     public void mousePressed() {
@@ -74,16 +57,11 @@ public class ComplexFractal extends PApplet{
     	mX = map(posX, 0, width, xmin, xmax);
     	mY = map(posY, 0, height, ymin, ymax);
     	
-    	
-       	stroke(255);
-    	noFill();
-    	rect(posX, posY, abs(posX - pmouseX), abs(posY - pmouseY));
     }
     
     public void mouseDragged() {
     	stroke(255);
-    	noFill();
-    	rect(posX, posY, abs(posX - pmouseX), abs(posY - pmouseY));
+    	
     }
     
     public void mouseReleased() {
@@ -102,12 +80,14 @@ public class ComplexFractal extends PApplet{
     }
     
     public void keyTyped() {
-    	if (keyCode == ENTER) {
+    	if (keyCode == 0) {
+    		System.out.println("True");
     		xmin = -2.2f;
     		xmax = 1.2f;
     		ymin = -1.2f;
     		ymax = 1.2f;
-    				
+    	} else {
+    		System.out.println("False");
     	}
     }
     
@@ -122,6 +102,37 @@ public class ComplexFractal extends PApplet{
      */
     public double map(int z, int n, int m, float x, float y) {
     	return ((y - x)/((double) m - n))*z + ((x*m + y*n)/((double) m + n)); 
+    }
+    
+    public void makeFractal() {
+	   	for (int x = 0; x < width; x++) {
+    		
+    		double zX = map(x, 0, width, xmin, xmax);
+    		
+    		for (int y = 0; y < height; y++) {
+    			
+    			double zY = map(y, 0, height, ymin, ymax);
+    			
+    			Complex c = new Complex(zX, zY);
+    			
+    			double colour = c.mandelbrotSimpleConvergence(100);
+    			
+    			
+    			if (colour == 2) {
+    				pixels[x+y*width] = color(0);
+    			} else { 
+    				
+    				float red = cos((float) (0.1*colour*50)) * 127 + 128;
+    				float green = sin((float) (0.2*colour*50) + 2) * 127 + 128;
+    				float blue = sin((float) (0.3*colour*50) + 4) * 127 + 128;
+    				
+    				pixels[x+y*width] = color(red, green, blue);
+    			}
+    			
+    		}
+    	}	
+	   	
+	   	updatePixels();
     }
     
 }
