@@ -5,90 +5,92 @@ import processing.event.MouseEvent;
 
 import java.awt.Color;
 import java.lang.Math;
+import java.util.ArrayList;
 
 public class ComplexFractal extends PApplet{
 	
-	float angle = PI/4;
 	int scale = 500;
-	
-	float zoom, transX, transY;
-	float xmin, xmax, ymin, ymax;
-	boolean r = false;
-	
+
+	float xmin, xmax, ymin, ymax;	
 	double mX, mY, pmX, pmY; 
 	
-	int posX, posY;
+	int i = 0;
 	
-	int c1 = color(204, 102, 0);
-	int c2 = color(0, 102, 153);
+	ArrayList<Dimension> dimensions = new ArrayList<Dimension>();
 	
     public static void main(String[] args) {
         PApplet.main(ComplexFractal.class.getName());
     }
 
     public void settings(){
-    	int a = (int) (2.2+1.2)*scale;
-    	int b = (int) 1.2*2*scale;
+       	xmin = -2.2f;
+    	xmax = 1.2f;
+    	ymin = -1.2f;
+    	ymax = 1.2f;
+    	
+    	dimensions.add(new Dimension(xmin, xmax, ymin, ymax));
+    	
+    	int a = (int) (abs(xmin) + abs(xmax))*scale;
+    	int b = (int) (abs(ymin) + abs(ymax))*scale;
     	size(a, b);
+    	
     }
 
     public void setup() {
     	pixelDensity(1);
     	loadPixels();
-    
-    	
-    	xmin = -2.2f;
-    	xmax = 1.2f;
-    	ymin = -1.2f;
-    	ymax = 1.2f;
-    	
-    	makeFractal();
+    	makeFractal(i);
     }
     
     public void draw() {
-    	makeFractal();
+    	makeFractal(i);
     }
 
     public void mousePressed() {
-    	
-    	posX = mouseX;
-    	posY = mouseY;
-
-    	mX = map(posX, 0, width, xmin, xmax);
-    	mY = map(posY, 0, height, ymin, ymax);
-    	
+    	Dimension d = dimensions.get(i);
+    	mX = map(mouseX, 0, width, d.getXMin(), d.getXMax());
+    	mY = map(mouseY, 0, height, d.getYMin(), d.getYMax());
     }
     
-    public void mouseDragged() {
-    	stroke(255);
-    	
-    }
+//    public void mouseDragged() {
+//    	stroke(255);
+//    }
     
     public void mouseReleased() {
+    	Dimension d = dimensions.get(i);
+    	pmX = map(mouseX, 0, width, d.getXMin(), d.getXMax());
+    	pmY = map(mouseY, 0, height, d.getYMin(), d.getYMax());
     	
-       	pmX = map(pmouseX, 0, width, xmin, xmax);
-    	pmY = map(pmouseY, 0, height, ymin, ymax);
-    	
-    	System.out.println("(" + mX + ", " + mY + ", " + pmX + ", " + pmY + ")");
-    	
-    	xmin = (float) Math.min(mX, pmX);
-    	xmax = (float) Math.max(mX, pmX);
-    	
-    	ymin = (float) Math.min(mY, pmY);
-    	ymax = (float) Math.max(mY,  pmY);
-    	
+    	Dimension delta = new Dimension((float) Math.min(mX, pmX), 
+									    (float) Math.max(mX, pmX), 
+									    (float) Math.min(mY, pmY), 
+									    (float) Math.max(mY, pmY)
+									   );
+    	i++;
+    	if (i < dimensions.size()) {
+    		dimensions.set(i, delta);
+    		
+    		for (int j = i+1; j<dimensions.size(); j++) { //remove old dimensions
+    			dimensions.remove(j);
+    		}
+    		
+    	} else { 
+    		dimensions.add(delta);
+    	}
+    	redraw();
     }
     
-    public void keyTyped() {
-    	if (keyCode == 0) {
-    		System.out.println("True");
-    		xmin = -2.2f;
-    		xmax = 1.2f;
-    		ymin = -1.2f;
-    		ymax = 1.2f;
-    	} else {
-    		System.out.println("False");
+    public void keyPressed() {
+    	if (key == CODED) {
+	    	if (keyCode == 10) {
+	    		i=0;
+	    	} else if (keyCode == LEFT && i > 0) {
+	    		i--;
+	    	} else if (keyCode == RIGHT && i < dimensions.size()-1) {
+	    		i++;
+	    	}
     	}
+    	redraw();
     }
     
     /**
@@ -104,14 +106,17 @@ public class ComplexFractal extends PApplet{
     	return ((y - x)/((double) m - n))*z + ((x*m + y*n)/((double) m + n)); 
     }
     
-    public void makeFractal() {
+    public void makeFractal(int i) {
+ 
+    	Dimension d = dimensions.get(i);
+    	
 	   	for (int x = 0; x < width; x++) {
     		
-    		double zX = map(x, 0, width, xmin, xmax);
+    		double zX = map(x, 0, width, d.getXMin(), d.getXMax());
     		
     		for (int y = 0; y < height; y++) {
     			
-    			double zY = map(y, 0, height, ymin, ymax);
+    			double zY = map(y, 0, height, d.getYMin(), d.getYMax());
     			
     			Complex c = new Complex(zX, zY);
     			
@@ -122,9 +127,9 @@ public class ComplexFractal extends PApplet{
     				pixels[x+y*width] = color(0);
     			} else { 
     				
-    				float red = cos((float) (0.1*colour*50)) * 127 + 128;
-    				float green = sin((float) (0.2*colour*50) + 2) * 127 + 128;
-    				float blue = sin((float) (0.3*colour*50) + 4) * 127 + 128;
+    				float red = cos((float) (0.1*colour*100)) * 127 + 128;
+    				float green = sin((float) (0.2*colour*100) + 2) * 127 + 128;
+    				float blue = sin((float) (0.3*colour*100) + 4) * 127 + 128;
     				
     				pixels[x+y*width] = color(red, green, blue);
     			}
